@@ -1,7 +1,10 @@
 """
-=============
+Project: PosingBySketching
+Version: 4.0
+
+==========================
 OpenVR Compatible (HTC Vive)
-=============
+==========================
 
 OpenVR Compatible head mounted display
 It uses a python wrapper to connect with the SDK
@@ -43,44 +46,6 @@ class tester(threading.Thread):
 
     def run(self):
         matrix = self.poses[self.tracker_index].mDeviceToAbsoluteTracking
-        # ## MOVE OBJECT TRACKER
-        # try:
-        #     camera = bpy.data.objects["Camera"]
-        #     tracker = bpy.data.objects["Tracker"]
-        #
-        #     self.trans_matrix = camera.matrix_world * bpy.data.objects['Origin'].matrix_world
-        #     RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
-        #                               (matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]),
-        #                               (matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]),
-        #                               (0, 0, 0, 1)))
-        #
-        #     if (self.rotFlag):
-        #         tracker.matrix_world = self.trans_matrix * RTS_matrix
-        #     else:
-        #         diff_rot_matr = self.diff_rot.to_matrix()
-        #         # RTS_matrix = RTS_matrix.inverted()
-        #         inverted_matrix = RTS_matrix * diff_rot_matr.to_4x4()
-        #         inverted_matrix = inverted_matrix.inverted()
-        #         # stMatrix =  self.diff_trans_matrix * RTS_matrix * diff_rot_matr.to_4x4()
-        #         stMatrix = self.diff_trans_matrix * inverted_matrix
-        #         quat = stMatrix.to_quaternion()
-        #         camera.rotation_quaternion = quat
-        # except:
-        #     print("ERROR: ")
-
-
-        # MOVE BONE TRACKER
-        # bone = bpy.data.objects["Armature_Tangible_VR"]
-        # pbone = bone.pose.bones["IntelligentBrick"]
-        # translationMatrix = Matrix(((0.0, 0.0, 0.0, bone.location[0]), (0.0, 0.0, 0.0, bone.location[1]),
-        #                            (0.0, 0.0, 0.0, bone.location[2]), (0.0, 0.0, 0.0, 1.0)))
-        # quat = Quaternion((0.707, -0.707, 0, 0))
-        # diff_rot_matr = quat.to_matrix()
-        # RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
-        #                     (matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]),
-        #                     (matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]),
-        #                     (0, 0, 0, 1)))
-        # pbone.matrix = (RTS_matrix - translationMatrix)#* diff_rot_matr.to_4x4()
 
         camera = bpy.data.objects["Camera"]
         self.trans_matrix = camera.matrix_world * bpy.data.objects['Origin'].matrix_world
@@ -107,121 +72,27 @@ class tester(threading.Thread):
 class State(Enum):
     IDLE = 1
     DECISIONAL = 2
-    INTERACTION_GLOBAL = 3
-    INTERACTION_LOCAL = 4
-    NAVIGATION_ENTER = 5
-    NAVIGATION = 6
-    NAVIGATION_EXIT = 7
-    ZOOM_IN = 8
-    ZOOM_OUT = 9
-    CAMERA_MOVE_STEP = 10
-    CAMERA_MOVE_CONT = 11
-    CAMERA_ROT_CONT = 12
-    ON_BUTTON_PRESSED = 13
-    START_RECORD = 14
-    END_RECORD = 15
-    PLAY_ANIMATION = 16
-    SETTING = 17
-    MOVE_RIGHT = 18
-    MOVE_LEFT = 19
-    MULTIPLY_ACTION = 20
-    DIVIDE_ACTION = 21
-    START_ANIMATION = 22
-    STOP_ANIMATION = 23
-    MOVE_TIMELINE_CURSOR_ENTER = 24
-    MOVE_TIMELINE_CURSOR = 25
-    IDLE_KEYMODE = 26
-    NEXT_FRAME = 27
-    PREV_FRAME = 28
-    SCALING = 29
-    CREATE_CURVE = 31
-    ADD_POINT_CURVE = 32
-    INTERACTION_CURVEMODE = 33
-    DECISIONAL_CURVEMODE = 34
-    INSERT_KEYFRAME = 38
-    DELETE_KEYFRAME = 39
-    IDLE_EDIT_ACTION = 40
-    DECISIONAL_EDIT_ACTION = 41
-    START_RECORD_PROP = 42
-    END_RECORD_PROP = 43
-    IDLE_LOCAL = 44
-    IDLE_F_CURVEMODE = 45
-    DECISIONAL_F_CURVEMODE = 46
-    INTERACTION_F_CURVEMODE = 47
-    CHANGE_AXES = 48
-    INSERT_EVAL_KEYFRAME = 49
-    DELETE_EVAL_KEYFRAME = 50
-    IDLE_CURVEMODE_PERF = 51
-    IDLE_CURVEMODE_KEY = 52
-    IDLE_TUNING_PERF = 53
-    IDLE_TUNING_KEY = 54
-    INSERT_PROP_KEYFRAME = 55
-    DELETE_PROP_KEYFRAME = 56
-    DELETE = 57
-    IDLE_RIGGING = 58
-    DECISIONAL_RIGGING = 59
-    INTERACTION_RIGGING = 60
-    IDLE_SKINNING = 61
-    ADD_BONE = 62
-    INCREASE_BONE_ROLL = 63
-    DECREASE_BONE_ROLL = 64
-    INCREASE_BRUSH_DIM = 65
-    DECREASE_BRUSH_DIM = 66
-    INCREASE_BRUSH_WEIGHT = 67
-    DECREASE_BRUSH_WEIGHT = 68
-    INTERACTION_SKINNING = 69
-    CHANGE_VERTEX_GROUP = 70
-    IDLE_ARM_CONSTR = 71
-    INCREASE_CHAIN_LENGTH = 72
-    DECREASE_CHAIN_LENGTH = 73
-    SET_TARGET_IK = 74
-    SET_POLE_IK = 75
-    REMOVE_BONE = 76
+    INTERACTION_LOCAL = 3
+    NAVIGATION_ENTER = 4
+    NAVIGATION = 5
+    NAVIGATION_EXIT = 6
+    ZOOM_IN = 7
+    ZOOM_OUT = 8
+    CAMERA_MOVE_CONT = 9
+    CAMERA_ROT_CONT = 10
+    SCALING = 11
+    CHANGE_AXES = 12
+    DRAWING = 13
 
 class StateLeft(Enum):
     IDLE = 1
-    TIMELINE_NAV = 2
-    TIMELINE_NAV_PREV = 3
-    TIMELINE_NAV_NEXT = 4
-    SETTING = 6
-    SETTING_ENTER = 7
-    SETTING_EXIT = 8
-    DECISIONAL = 9
-    INTERACTION_LOCAL = 10
-    MULTIPLY_ACTION = 11
-    DIVIDE_ACTION = 12
-    MOVE_RIGHT = 13
-    MOVE_LEFT = 14
-    HELP = 15
-    IDLE_KEYMODE = 16
-    SCALING = 17
-    IDLE_CURVEMODE = 20
-    INTERACTION_CURVEMODE = 21
-    DECISIONAL_CURVEMODE = 22
-    IDLE_TUNING = 23
-    CHANGE_PROP = 24
-    INSERT_KEYFRAME = 27
-    DELETE_KEYFRAME = 28
-    IDLE_EDIT_ACTION = 29
-    DECISIONAL_EDIT_ACTION = 30
-    IDLE_LOCAL = 31
-    IDLE_F_CURVEMODE = 32
-    CHANGE_FCURVE = 33
-    CHANGE_AXES = 34
-    NAVIGATION = 35
-    MOVE_COLOR_CURSOR_ENTER = 36
-    MOVE_COLOR_CURSOR = 37
-    IDLE_RIGGING = 38
-    RIGGING_ARMATURE_AUTO = 39
-    RIGGING_ARMATURE_EMPTY = 40
-    TOOGLE_CONNECTION_BONE = 41
-    SUBDIVIDE_BONE = 42
-    IDLE_SKINNING = 43
-    IDLE_ARM_CONSTR = 44
-    #?# GEOMETRIA VR #?#
-    APPLY_BOOL_OPERATION = 47
-    INCREASE_OPERATOR = 48
-    DECREASE_OPERATOR = 49
+    DECISIONAL = 2
+    INTERACTION_LOCAL = 3
+    NAVIGATION = 5
+    SCALING = 11
+    CHANGE_AXES = 12
+
+
 
 class OpenVR(HMD_Base):
     ctrl_index_r = 0
@@ -256,6 +127,8 @@ class OpenVR(HMD_Base):
                'Controller.R', 'Controller.L',
                'SelectedObj', 'Text.R', 'Text.L']
 
+    points = []
+
     def __init__(self, context, error_callback):
         super(OpenVR, self).__init__('OpenVR', True, context, error_callback)
         checkModule('hmd_sdk_bridge')
@@ -281,31 +154,6 @@ class OpenVR(HMD_Base):
     def projection_matrix(self, value):
         self._projection_matrix[self._current_eye] = \
             self._convertMatrixTo4x4(value)
-
-    ## Finds the index position of the first controller(Right Controller)
-    def findControllers(self, vrSys):
-        r_index, l_index, tracker_index, hmd_index = -1,-1,-1,-1
-
-        for i in range(openvr.k_unMaxTrackedDeviceCount):
-            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == openvr.TrackedDeviceClass_Invalid:
-                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - ")
-            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == openvr.TrackedDeviceClass_HMD:
-                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - HMD")
-                hmd_index = i
-            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == openvr.TrackedDeviceClass_TrackingReference:
-                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - TrackingReference")
-            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == openvr.TrackedDeviceClass_Controller:
-                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - Controller")
-                if r_index==-1:
-                    r_index = i
-                else:
-                    l_index = i
-            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == 3:
-                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - VIVE Tracker")
-                tracker_index = i
-
-        print('r_index = ', r_index,' l_index = ', l_index)
-        return r_index, l_index, tracker_index, hmd_index
 
     def init(self, context):
         """
@@ -358,7 +206,35 @@ class OpenVR(HMD_Base):
     def _setup(self):
         return self._hmd.setup(self._color_texture[0], self._color_texture[1])
 
-    def setController(self, ctrl_index_r):
+    # ---------------------------------------- #
+    # Functions
+    # ---------------------------------------- #
+    ## Find the index of the two controllers
+    def findControllers(self, vrSys):
+        r_index, l_index, tracker_index, hmd_index = -1, -1, -1, -1
+
+        for i in range(openvr.k_unMaxTrackedDeviceCount):
+            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == openvr.TrackedDeviceClass_Invalid:
+                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - ")
+            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == openvr.TrackedDeviceClass_HMD:
+                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - HMD")
+                hmd_index = i
+            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == openvr.TrackedDeviceClass_TrackingReference:
+                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - TrackingReference")
+            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == openvr.TrackedDeviceClass_Controller:
+                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - Controller")
+                if r_index == -1:
+                    r_index = i
+                else:
+                    l_index = i
+            if openvr.IVRSystem.getTrackedDeviceClass(vrSys, i) == 3:
+                print(i, openvr.IVRSystem.getTrackedDeviceClass(vrSys, i), " - VIVE Tracker")
+                tracker_index = i
+
+        print('r_index = ', r_index, ' l_index = ', l_index)
+        return r_index, l_index, tracker_index, hmd_index
+
+    def setController(self):
         poses_t = openvr.TrackedDevicePose_t * openvr.k_unMaxTrackedDeviceCount
         poses = poses_t()
         openvr.VRCompositor().waitGetPoses(poses, len(poses), None, 0)
@@ -371,20 +247,6 @@ class OpenVR(HMD_Base):
             ctrl = bpy.data.objects["Controller.R"]
             ctrl_l = bpy.data.objects["Controller.L"]
 
-            #get location
-            #ctrl.location[0] = matrix[0][3] * self.zoom + camera.location[0]
-            #ctrl.location[1] = -matrix[2][3] * self.zoom + camera.location[1]
-            #ctrl.location[2] = matrix[1][3] * self.zoom + camera.location[2]
-
-            # get orientation
-            #w = math.sqrt(max(0, 1 + matrix.m[0][0] + matrix.m[1][1] + matrix.m[2][2])) / 2;
-            #x = math.sqrt(max(0, 1 + matrix.m[0][0] - matrix.m[1][1] - matrix.m[2][2])) / 2;
-            #z = math.sqrt(max(0, 1 - matrix.m[0][0] + matrix.m[1][1] - matrix.m[2][2])) / 2;
-            #y = math.sqrt(max(0, 1 - matrix.m[0][0] - matrix.m[1][1] + matrix.m[2][2])) / 2;
-            #x = math.copysign(x, matrix.m[2][1] - matrix.m[1][2]);
-            #z = math.copysign(z, matrix.m[0][2] - matrix.m[2][0]);
-            #y = -math.copysign(y, matrix.m[1][0] - matrix.m[0][1]);
-            #ctrl.rotation_quaternion = (w, x, y, z)
 
             self.trans_matrix = camera.matrix_world * bpy.data.objects['Origin'].matrix_world
             RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
@@ -398,7 +260,6 @@ class OpenVR(HMD_Base):
                                  (0, 0, 0, 1)))
 
             if(self.rotFlag):
-
                 ctrl.matrix_world = self.trans_matrix * RTS_matrix
                 bpy.data.objects["Text.R"].location = ctrl.location
                 bpy.data.objects["Text.R"].rotation_quaternion = ctrl.rotation_quaternion * Quaternion((0.707, -0.707, 0, 0))
@@ -406,8 +267,6 @@ class OpenVR(HMD_Base):
                 ctrl_l.matrix_world = self.trans_matrix * RTS_matrix2
                 bpy.data.objects["Text.L"].location = ctrl_l.location
                 bpy.data.objects["Text.L"].rotation_quaternion = ctrl_l.rotation_quaternion * Quaternion((0.707, -0.707, 0, 0))
-
-
 
             else:
                 diff_rot_matr = self.diff_rot.to_matrix()
@@ -418,10 +277,10 @@ class OpenVR(HMD_Base):
                 camera.rotation_quaternion = quat
 
 
-            ## SNAP CONTROLLER
+            ## snap controller
             bpy.data.objects["TUI.R"].location = ctrl.location
             bpy.data.objects["TUI.L"].location = ctrl_l.location
-            bpy.data.objects['Brush'].location = ctrl.location
+            #bpy.data.objects['Brush'].location = ctrl.location
 
 
         except:
@@ -594,6 +453,7 @@ class OpenVR(HMD_Base):
 
         return cObj, cBone
 
+    ## Resets the original transformation when constraints movement are used
     def applyConstraint(self, isRight):
         if isRight:
             type = self.axes[self.curr_axes_r].split('_')[0]
@@ -688,6 +548,35 @@ class OpenVR(HMD_Base):
                     bpy.data.objects[obj].rotation_euler[1] = init_rot[1]
                     bpy.data.objects[obj].rotation_mode = 'QUATERNION'
 
+    ## Create a curve from a set of points
+    def create_curve(self, point):
+        name = "Stroke"
+        curvedata = bpy.data.curves.new(name=name, type='CURVE')
+        curvedata.dimensions = '3D'
+        curvedata.fill_mode = 'FULL'
+        curvedata.bevel_depth = 0.01
+
+        ob = bpy.data.objects.new(name + "Obj", curvedata)
+        bpy.context.scene.objects.link(ob)
+
+        polyline = curvedata.splines.new('BEZIER')
+        polyline.resolution_u = 1
+        polyline.bezier_points[0].co = point
+
+
+    def update_curve(self, point):
+        polyline = bpy.data.curves['Stroke'].splines[0]
+        polyline.bezier_points.add(1)
+        polyline.bezier_points[-1].co = point
+        polyline.bezier_points[-1].handle_left = point
+        polyline.bezier_points[-1].handle_right = point
+
+
+
+
+
+
+
     # ---------------------------------------- #
     # Main Loop
     # ---------------------------------------- #
@@ -703,7 +592,7 @@ class OpenVR(HMD_Base):
             self._eye_position_raw[1] = data[3]
 
 
-            self.setController(self.ctrl_index_r)
+            self.setController()
             # ctrl_state contains the value of the button
             idx, ctrl_state = openvr.IVRSystem().getControllerState(self.ctrl_index_r)
             idx_l, ctrl_state_l = openvr.IVRSystem().getControllerState(self.ctrl_index_l)
@@ -727,29 +616,35 @@ class OpenVR(HMD_Base):
                     self.changeSelection(self.objToControll, self.boneToControll, False)
                     self.state = State.DECISIONAL
 
-                # INTERACTION_LOCAL
-                if (ctrl_state.ulButtonPressed == 8589934592 and self.objToControll != ""):
-                    print("IDLE -> INTERACTION LOCAL")
-                    self.state = State.INTERACTION_LOCAL
-                    self.curr_axes_r = 0
+                # INTERACTION_LOCAL - VR_BLENDER
+                # if ctrl_state.ulButtonPressed == 8589934592 and self.objToControll != "":
+                #     print("IDLE -> INTERACTION LOCAL")
+                #     self.state = State.INTERACTION_LOCAL
+                #     self.curr_axes_r = 0
+                #
+                #     if self.boneToControll != "":
+                #         self.diff_rot = ctrl.rotation_quaternion.inverted() * bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].matrix.to_quaternion()
+                #         self.diff_loc = bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].matrix.to_translation() - ctrl.location
+                #         self.initial_loc = copy.deepcopy(bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].location)
+                #         bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_mode = 'XYZ'
+                #         self.initial_rot = copy.deepcopy(bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_euler)
+                #         bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_mode = 'QUATERNION'
+                #
+                #     else:
+                #         self.diff_rot = ctrl.rotation_quaternion.inverted() * bpy.data.objects[self.objToControll].rotation_quaternion
+                #         self.diff_loc = bpy.data.objects[self.objToControll].location - ctrl.location
+                #         self.initial_loc = copy.deepcopy(bpy.data.objects[self.objToControll].location)
+                #         bpy.data.objects[self.objToControll].rotation_mode = 'XYZ'
+                #         self.initial_rot = copy.deepcopy(bpy.data.objects[self.objToControll].rotation_euler)
+                #         bpy.data.objects[self.objToControll].rotation_mode = 'QUATERNION'
 
-                    if self.boneToControll != "":
-                        self.diff_rot = ctrl.rotation_quaternion.inverted() * bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].matrix.to_quaternion()
-                        self.diff_loc = bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].matrix.to_translation() - ctrl.location
-                        self.initial_loc = copy.deepcopy(bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].location)
-                        bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_mode = 'XYZ'
-                        self.initial_rot = copy.deepcopy(bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_euler)
-                        bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_mode = 'QUATERNION'
+                # DRAWING SKETCHES - POSING_SKETCHES
+                if ctrl_state.ulButtonPressed == 8589934592:
+                    print("IDLE -> DRAWING")
+                    if bpy.data.objects.get('StrokeObj') is None:
+                        self.create_curve(bpy.data.objects['Controller.R'].location)
+                    self.state = State.DRAWING
 
-                    else:
-                        self.diff_rot = ctrl.rotation_quaternion.inverted() * bpy.data.objects[self.objToControll].rotation_quaternion
-                        self.diff_loc = bpy.data.objects[self.objToControll].location - ctrl.location
-                        self.initial_loc = copy.deepcopy(bpy.data.objects[self.objToControll].location)
-                        bpy.data.objects[self.objToControll].rotation_mode = 'XYZ'
-                        self.initial_rot = copy.deepcopy(bpy.data.objects[self.objToControll].rotation_euler)
-                        bpy.data.objects[self.objToControll].rotation_mode = 'QUATERNION'
-
-                # PLAY/RECORD
                 if ctrl_state.ulButtonPressed == 4294967296:
                     x,y = ctrl_state.rAxis[0].x, ctrl_state.rAxis[0].y
                     print (x,y)
@@ -759,7 +654,14 @@ class OpenVR(HMD_Base):
                     print("IDLE -> NAVIGATION")
                     self.state = State.NAVIGATION_ENTER
 
-            if self.state == State.DECISIONAL:
+            elif self.state == State.DRAWING:
+                #self.points.append(copy.deepcopy(bpy.data.objects['Controller.R'].location))
+                self.update_curve(bpy.data.objects['Controller.R'].location)
+
+                if (ctrl_state.ulButtonPressed != 8589934592):
+                    self.state = State.IDLE
+
+            elif self.state == State.DECISIONAL:
                 print("Decisional")
                 bpy.data.objects["Text.R"].data.body = "Selection\n " + self.objToControll + "-" + self.boneToControll
                 tui.hide = False
@@ -783,7 +685,7 @@ class OpenVR(HMD_Base):
 
                     self.state = State.IDLE
 
-            if self.state == State.INTERACTION_LOCAL:
+            elif self.state == State.INTERACTION_LOCAL:
                 bpy.data.objects["Text.R"].data.body = "Interaction\n" + self.objToControll + "-" + self.boneToControll + "\n" + self.axes[self.curr_axes_r]
                 tui.hide = True
                 pointer.hide = True
@@ -825,8 +727,6 @@ class OpenVR(HMD_Base):
 
                         self.applyConstraint(True)
 
-
-
                 if (ctrl_state.ulButtonPressed == 8589934596):
                     print("INTERACTION_LOCAL -> CHANGE_AXIS")
                     self.state = State.CHANGE_AXES
@@ -835,7 +735,7 @@ class OpenVR(HMD_Base):
                     # print("grillet released")
                     self.state = State.IDLE
 
-            if self.state == State.CHANGE_AXES:
+            elif self.state == State.CHANGE_AXES:
                 if (ctrl_state.ulButtonPressed == 8589934592):
                     self.curr_axes_r += 1
                     if self.curr_axes_r >= len(self.axes):
@@ -846,26 +746,26 @@ class OpenVR(HMD_Base):
                 if (ctrl_state.ulButtonPressed == 0):
                     self.state = State.IDLE
 
-            if self.state == State.NAVIGATION_ENTER:
+            elif self.state == State.NAVIGATION_ENTER:
                 tui.hide = True
                 pointer.hide = True
                 bpy.data.objects["Text.R"].data.body = "Navigation\n "
                 bpy.data.objects["Text.L"].data.body = "Navigation\n "
                 if ctrl_state.ulButtonPressed != 2:
-                    bpy.data.textures['Texture.R'].image = bpy.data.images['Nav-R.png']
-                    bpy.data.textures['Texture.L'].image = bpy.data.images['Hand-L.png']
+                    #bpy.data.textures['Texture.R'].image = bpy.data.images['Nav-R.png']
+                    #bpy.data.textures['Texture.L'].image = bpy.data.images['Hand-L.png']
                     self.state = State.NAVIGATION
                     self.state_l = StateLeft.NAVIGATION
 
-            if self.state == State.NAVIGATION_EXIT:
+            elif self.state == State.NAVIGATION_EXIT:
                 if ctrl_state.ulButtonPressed != 2:
                     print("NAVIGATION -> IDLE")
-                    bpy.data.textures['Texture.R'].image = bpy.data.images['Perf-R.png']
-                    bpy.data.textures['Texture.L'].image = bpy.data.images['Ctrl-L.png']
+                    #bpy.data.textures['Texture.R'].image = bpy.data.images['Perf-R.png']
+                    #bpy.data.textures['Texture.L'].image = bpy.data.images['Ctrl-L.png']
                     self.state = State.IDLE
                     self.state_l = StateLeft.IDLE
 
-            if self.state == State.NAVIGATION:
+            elif self.state == State.NAVIGATION:
                 if ctrl_state.ulButtonPressed == 4294967296:
                     x, y = ctrl_state.rAxis[0].x, ctrl_state.rAxis[0].y
                     if (x > -0.3 and x < 0.3 and y < -0.8):
@@ -899,12 +799,10 @@ class OpenVR(HMD_Base):
                         self.zoom = scale_factor
                         self.state = State.ZOOM_OUT
 
-
-
                 if (ctrl_state.ulButtonPressed == 8589934592):
-                    print('Orientamento della camera: ', camera.rotation_quaternion)
+                    print('Camera rot: ', camera.rotation_quaternion)
                     self.diff_rot = ctrl.rotation_quaternion.inverted() * camera.rotation_quaternion
-                    print('Diff:                      ', self.diff_rot)
+                    print('Diff:       ', self.diff_rot)
                     # self.diff_loc = camera.location - ctrl.location
                     self.diff_trans_matrix = bpy.data.objects['Camera'].matrix_world * bpy.data.objects[
                         'Origin'].matrix_world
@@ -919,27 +817,27 @@ class OpenVR(HMD_Base):
                 if (ctrl_state.ulButtonPressed == 2):
                     self.state = State.NAVIGATION_EXIT
 
-            if self.state == State.ZOOM_IN:
+            elif self.state == State.ZOOM_IN:
                 if (ctrl_state.ulButtonPressed != 4294967296):
                     self.state = State.NAVIGATION
 
-            if self.state == State.ZOOM_OUT:
+            elif self.state == State.ZOOM_OUT:
                 if (ctrl_state.ulButtonPressed != 4294967296):
                     self.state = State.NAVIGATION
 
-            if self.state == State.CAMERA_MOVE_CONT:
+            elif self.state == State.CAMERA_MOVE_CONT:
                 camera.location = camera.location + (self.diff_loc - ctrl.location)
 
                 if ctrl_state.ulButtonPressed != 4:
                     self.state = State.NAVIGATION
 
-            if self.state == State.CAMERA_ROT_CONT:
+            elif self.state == State.CAMERA_ROT_CONT:
 
                 if (ctrl_state.ulButtonPressed != 8589934592):
                     self.rotFlag = True
                     self.state = State.NAVIGATION
 
-            if self.state == State.SCALING:
+            elif self.state == State.SCALING:
                 currDist = self.computeTargetObjDistance("TUI.L", "", True)
                 offset = (currDist - self.diff_distance) / 10
                 if self.boneToControll != "":
@@ -960,8 +858,6 @@ class OpenVR(HMD_Base):
                     if (ctrl_state_l.ulButtonPressed != 8589934592):
                         self.state = State.IDLE
                         self.state_l = StateLeft.IDLE
-
-
 
 
             ########## Left_Controller_States ##########
@@ -1004,7 +900,7 @@ class OpenVR(HMD_Base):
                         self.initial_rot_l = copy.deepcopy(bpy.data.objects[self.objToControll_l].rotation_euler)
                         bpy.data.objects[self.objToControll_l].rotation_mode = 'QUATERNION'
 
-            if self.state_l == StateLeft.INTERACTION_LOCAL:
+            elif self.state_l == StateLeft.INTERACTION_LOCAL:
                 bpy.data.objects["Text.L"].data.body = "Interaction\n" + self.objToControll_l + "-" + self.boneToControll_l + "\n" + self.axes[self.curr_axes_l]
                 tui_l.hide = True
                 pointer.hide = True
@@ -1046,7 +942,12 @@ class OpenVR(HMD_Base):
                 if (ctrl_state_l.ulButtonPressed != 8589934592 and ctrl_state_l.ulButtonPressed != 8589934596):
                     self.state_l = StateLeft.IDLE
 
-            if self.state_l == StateLeft.CHANGE_AXES:
+            elif self.state_l == StateLeft.NAVIGATION:
+                if (ctrl_state_l.ulButtonPressed == 4294967296):
+                    x, y = ctrl_state_l.rAxis[0].x, ctrl_state_l.rAxis[0].y
+                    print (x,y)
+
+            elif self.state_l == StateLeft.CHANGE_AXES:
                 if (ctrl_state_l.ulButtonPressed==8589934592):
                     self.curr_axes_l+=1
                     if self.curr_axes_l>=len(self.axes):
@@ -1060,7 +961,7 @@ class OpenVR(HMD_Base):
                     # print("grillet released")
                     self.state_l = StateLeft.IDLE
 
-            if self.state_l == StateLeft.SCALING:
+            elif self.state_l == StateLeft.SCALING:
 
                 # Exit from Scaling state
                 if (ctrl_state_l.ulButtonPressed != 8589934592):
@@ -1068,7 +969,7 @@ class OpenVR(HMD_Base):
                         self.state = State.IDLE
                         self.state_l = StateLeft.IDLE
 
-            if self.state_l == StateLeft.DECISIONAL:
+            elif self.state_l == StateLeft.DECISIONAL:
                 bpy.data.objects["Text.L"].data.body = "Selection\n" + self.objToControll_l + "-" + self.boneToControll_l
                 tui_l.hide = False
                 pointer.hide = False
