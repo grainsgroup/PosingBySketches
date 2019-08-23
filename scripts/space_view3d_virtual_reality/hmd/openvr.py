@@ -29,45 +29,12 @@ from ..lib import (
         checkModule,
         )
 
+import datetime
 
 currObject = ""
 currBone = ""
 currObject_l = ""
-currBone_l =""
-
-
-class tester(threading.Thread):
-    def __init__(self, threadID, poses, hmd_index,tracker_index):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.poses = poses
-        self.hmd_index = hmd_index
-        self.tracker_index = tracker_index
-
-    def run(self):
-        matrix = self.poses[self.tracker_index].mDeviceToAbsoluteTracking
-
-        camera = bpy.data.objects["Camera"]
-        self.trans_matrix = camera.matrix_world * bpy.data.objects['Origin'].matrix_world
-        RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
-                             (matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]),
-                             (matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]),
-                             (0, 0, 0, 1)))
-        ## TUI ARMATURE
-        bpy.data.objects["Armature_Tangible_VR"].pose.bones["IntelligentBrick"].matrix = self.trans_matrix * RTS_matrix
-
-        ## SNAP CONTROLLER
-        bpy.data.objects["TUI.R"].location = bpy.data.objects["Armature_Tangible_VR"].location + \
-                                           bpy.data.objects["Armature_Tangible_VR"].pose.bones["IntelligentBrick"].center
-
-        ## HMD
-        matrix = self.poses[self.hmd_index].mDeviceToAbsoluteTracking
-        RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
-                             (matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]),
-                             (matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]),
-                             (0, 0, 0, 1)))
-
-        bpy.data.objects["Head"].matrix_world = self.trans_matrix * RTS_matrix
+currBone_l = ""
 
 class State(Enum):
     IDLE = 1
@@ -91,8 +58,6 @@ class StateLeft(Enum):
     NAVIGATION = 5
     SCALING = 11
     CHANGE_AXES = 12
-
-
 
 class OpenVR(HMD_Base):
     ctrl_index_r = 0
@@ -123,7 +88,7 @@ class OpenVR(HMD_Base):
     rotFlag = True
     axes = ['LOC/ROT_XYZ','LOC_XYZ','LOC_X','LOC_Y','LOC_Z','ROT_XYZ','ROT_X','ROT_Y','ROT_Z']
 
-    gui_obj = ['TUI.R', 'TUI.L', 'Camera', 'Origin',
+    gui_obj = ['Camera', 'Origin',
                'Controller.R', 'Controller.L',
                'SelectedObj', 'Text.R', 'Text.L']
 
@@ -259,6 +224,7 @@ class OpenVR(HMD_Base):
                                  (matrix2[2][0], matrix2[2][1], matrix2[2][2], matrix2[2][3]),
                                  (0, 0, 0, 1)))
 
+            # Interaction state active
             if(self.rotFlag):
                 ctrl.matrix_world = self.trans_matrix * RTS_matrix
                 bpy.data.objects["Text.R"].location = ctrl.location
@@ -268,6 +234,7 @@ class OpenVR(HMD_Base):
                 bpy.data.objects["Text.L"].location = ctrl_l.location
                 bpy.data.objects["Text.L"].rotation_quaternion = ctrl_l.rotation_quaternion * Quaternion((0.707, -0.707, 0, 0))
 
+            # Navigation state active
             else:
                 diff_rot_matr = self.diff_rot.to_matrix()
                 inverted_matrix = RTS_matrix * diff_rot_matr.to_4x4()
@@ -277,89 +244,9 @@ class OpenVR(HMD_Base):
                 camera.rotation_quaternion = quat
 
 
-            ## snap controller
-            bpy.data.objects["TUI.R"].location = ctrl.location
-            bpy.data.objects["TUI.L"].location = ctrl_l.location
-            #bpy.data.objects['Brush'].location = ctrl.location
-
 
         except:
             print("ERROR: ")
-
-    ## Sets the location and orientation of the controller model and TUI pointer
-    def setTracker(self):
-
-        poses_t = openvr.TrackedDevicePose_t * openvr.k_unMaxTrackedDeviceCount
-        poses = poses_t()
-        openvr.VRCompositor().waitGetPoses(poses, len(poses), None, 0)
-
-        # Thread Version
-        tester(3, poses, self.hmd_index, self.tracker_index).start()
-
-        '''
-        # Function Version
-        matrix = poses[self.tracker_index].mDeviceToAbsoluteTracking
-        camera = bpy.data.objects["Camera"]
-        self.trans_matrix = camera.matrix_world * bpy.data.objects['Origin'].matrix_world
-        RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
-                             (matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]),
-                             (matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]),
-                             (0, 0, 0, 1)))
-        ## TUI ARMATURE
-        bpy.data.objects["Armature_Tangible_VR"].pose.bones["IntelligentBrick"].matrix = self.trans_matrix * RTS_matrix
-        
-        ## SNAP CONTROLLER
-        bpy.data.objects["TUI"].location = bpy.data.objects["Armature_Tangible_VR"].location + \
-                                           bpy.data.objects["Armature_Tangible_VR"].pose.bones["IntelligentBrick"].center
-        
-        ## HMD
-        matrix = poses[self.hmd_index].mDeviceToAbsoluteTracking
-        RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
-                               (matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]),
-                               (matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]),
-                               (0, 0, 0, 1)))
-        bpy.data.objects["Head"].matrix_world = self.trans_matrix * RTS_matrix
-        '''
-
-        '''
-        ## MOVE OBJECT TRACKER
-        try:
-            camera = bpy.data.objects["Camera"]
-            tracker = bpy.data.objects["Tracker"]
-            self.trans_matrix = camera.matrix_world * bpy.data.objects['Origin'].matrix_world
-            RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
-                                 (matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]),
-                                 matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]),
-                                (0, 0, 0, 1)))
-            if (self.rotFlag):
-                tracker.matrix_world = self.trans_matrix * RTS_matrix
-            else:
-                diff_rot_matr = self.diff_rot.to_matrix()
-                # RTS_matrix = RTS_matrix.inverted()
-                inverted_matrix = RTS_matrix * diff_rot_matr.to_4x4()
-                inverted_matrix = inverted_matrix.inverted()
-                # stMatrix =  self.diff_trans_matrix * RTS_matrix * diff_rot_matr.to_4x4()
-                stMatrix = self.diff_trans_matrix * inverted_matrix
-                quat = stMatrix.to_quaternion()
-                camera.rotation_quaternion = quat
-        except:
-            print("ERROR: ")
-        '''
-
-        '''
-        ## MOVE BONE TRACKER
-        bone = bpy.data.objects["Armature_Tangible_VR"]
-        pbone = bone.pose.bones["IntelligentBrick"]
-        translationMatrix = Matrix(((0.0, 0.0, 0.0, bone.location[0]), (0.0, 0.0, 0.0, bone.location[1]),
-                                    (0.0, 0.0, 0.0, bone.location[2]), (0.0, 0.0, 0.0, 1.0)))
-        quat = Quaternion((0.707, -0.707, 0, 0))
-        diff_rot_matr = quat.to_matrix()
-        RTS_matrix = Matrix(((matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]),
-                             (matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]),
-                             (matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]),
-                             0, 0, 0, 1)))
-        pbone.matrix = (RTS_matrix - translationMatrix)#* diff_rot_matr.to_4x4()
-        '''
 
     def changeSelection(self,obj,bone,selectState):
 
@@ -396,9 +283,9 @@ class OpenVR(HMD_Base):
     def computeTargetObjDistance(self, Object, Bone, isRotFlag):
 
         if isRotFlag:
-            tui = bpy.data.objects['TUI.R']
+            tui = bpy.data.objects['Controller.R']
         else:
-            tui = bpy.data.objects['TUI.L']
+            tui = bpy.data.objects['Controller.L']
 
         obj = bpy.data.objects[Object]
         if Bone != "":
@@ -563,14 +450,14 @@ class OpenVR(HMD_Base):
         polyline.resolution_u = 1
         polyline.bezier_points[0].co = point
 
-
+    ## Add new point to the curve
     def update_curve(self, point):
         polyline = bpy.data.curves['Stroke'].splines[0]
         polyline.bezier_points.add(1)
         polyline.bezier_points[-1].co = point
         polyline.bezier_points[-1].handle_left = point
         polyline.bezier_points[-1].handle_right = point
-
+        print (datetime.datetime.now())
 
 
 
@@ -599,8 +486,6 @@ class OpenVR(HMD_Base):
 
             ctrl = bpy.data.objects['Controller.R']
             ctrl_l = bpy.data.objects['Controller.L']
-            tui = bpy.data.objects['TUI.R']
-            tui_l = bpy.data.objects['TUI.L']
             pointer = bpy.data.objects['SelectedObj']
             camera = bpy.data.objects['Camera']
 
@@ -608,7 +493,6 @@ class OpenVR(HMD_Base):
 
             if self.state == State.IDLE:
                 bpy.data.objects["Text.R"].data.body = "Idle\n" + self.objToControll + "-" + self.boneToControll
-                tui.hide = True
 
                 # DECISIONAL
                 if (ctrl_state.ulButtonPressed == 4):
@@ -616,34 +500,34 @@ class OpenVR(HMD_Base):
                     self.changeSelection(self.objToControll, self.boneToControll, False)
                     self.state = State.DECISIONAL
 
-                # INTERACTION_LOCAL - VR_BLENDER
-                # if ctrl_state.ulButtonPressed == 8589934592 and self.objToControll != "":
-                #     print("IDLE -> INTERACTION LOCAL")
-                #     self.state = State.INTERACTION_LOCAL
-                #     self.curr_axes_r = 0
-                #
-                #     if self.boneToControll != "":
-                #         self.diff_rot = ctrl.rotation_quaternion.inverted() * bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].matrix.to_quaternion()
-                #         self.diff_loc = bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].matrix.to_translation() - ctrl.location
-                #         self.initial_loc = copy.deepcopy(bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].location)
-                #         bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_mode = 'XYZ'
-                #         self.initial_rot = copy.deepcopy(bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_euler)
-                #         bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_mode = 'QUATERNION'
-                #
-                #     else:
-                #         self.diff_rot = ctrl.rotation_quaternion.inverted() * bpy.data.objects[self.objToControll].rotation_quaternion
-                #         self.diff_loc = bpy.data.objects[self.objToControll].location - ctrl.location
-                #         self.initial_loc = copy.deepcopy(bpy.data.objects[self.objToControll].location)
-                #         bpy.data.objects[self.objToControll].rotation_mode = 'XYZ'
-                #         self.initial_rot = copy.deepcopy(bpy.data.objects[self.objToControll].rotation_euler)
-                #         bpy.data.objects[self.objToControll].rotation_mode = 'QUATERNION'
+                #INTERACTION_LOCAL - VR_BLENDER
+                if ctrl_state.ulButtonPressed == 8589934592 and self.objToControll != "":
+                    print("IDLE -> INTERACTION LOCAL")
+                    self.state = State.INTERACTION_LOCAL
+                    self.curr_axes_r = 0
 
-                # DRAWING SKETCHES - POSING_SKETCHES
-                if ctrl_state.ulButtonPressed == 8589934592:
-                    print("IDLE -> DRAWING")
-                    if bpy.data.objects.get('StrokeObj') is None:
-                        self.create_curve(bpy.data.objects['Controller.R'].location)
-                    self.state = State.DRAWING
+                    if self.boneToControll != "":
+                        self.diff_rot = ctrl.rotation_quaternion.inverted() * bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].matrix.to_quaternion()
+                        self.diff_loc = bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].matrix.to_translation() - ctrl.location
+                        self.initial_loc = copy.deepcopy(bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].location)
+                        bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_mode = 'XYZ'
+                        self.initial_rot = copy.deepcopy(bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_euler)
+                        bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].rotation_mode = 'QUATERNION'
+
+                    else:
+                        self.diff_rot = ctrl.rotation_quaternion.inverted() * bpy.data.objects[self.objToControll].rotation_quaternion
+                        self.diff_loc = bpy.data.objects[self.objToControll].location - ctrl.location
+                        self.initial_loc = copy.deepcopy(bpy.data.objects[self.objToControll].location)
+                        bpy.data.objects[self.objToControll].rotation_mode = 'XYZ'
+                        self.initial_rot = copy.deepcopy(bpy.data.objects[self.objToControll].rotation_euler)
+                        bpy.data.objects[self.objToControll].rotation_mode = 'QUATERNION'
+
+                # # DRAWING SKETCHES - POSING_SKETCHES
+                # if ctrl_state.ulButtonPressed == 8589934592:
+                #     print("IDLE -> DRAWING")
+                #     if bpy.data.objects.get('StrokeObj') is None:
+                #         self.create_curve(bpy.data.objects['Controller.R'].location)
+                #     self.state = State.DRAWING
 
                 if ctrl_state.ulButtonPressed == 4294967296:
                     x,y = ctrl_state.rAxis[0].x, ctrl_state.rAxis[0].y
@@ -664,7 +548,6 @@ class OpenVR(HMD_Base):
             elif self.state == State.DECISIONAL:
                 print("Decisional")
                 bpy.data.objects["Text.R"].data.body = "Selection\n " + self.objToControll + "-" + self.boneToControll
-                tui.hide = False
                 pointer.hide = False
 
                 # Compute the nearest object
@@ -687,7 +570,6 @@ class OpenVR(HMD_Base):
 
             elif self.state == State.INTERACTION_LOCAL:
                 bpy.data.objects["Text.R"].data.body = "Interaction\n" + self.objToControll + "-" + self.boneToControll + "\n" + self.axes[self.curr_axes_r]
-                tui.hide = True
                 pointer.hide = True
 
                 ## Controll object scale
@@ -697,7 +579,8 @@ class OpenVR(HMD_Base):
                     else:
                         self.initial_scale = copy.deepcopy(bpy.data.objects[self.objToControll].scale)
 
-                    self.diff_distance = self.computeTargetObjDistance("TUI.L", "", True)
+                    self.diff_distance = self.computeTargetObjDistance("Controller.L", "", True)
+
 
                     self.state = State.SCALING
                     self.state_l = StateLeft.SCALING
@@ -747,7 +630,6 @@ class OpenVR(HMD_Base):
                     self.state = State.IDLE
 
             elif self.state == State.NAVIGATION_ENTER:
-                tui.hide = True
                 pointer.hide = True
                 bpy.data.objects["Text.R"].data.body = "Navigation\n "
                 bpy.data.objects["Text.L"].data.body = "Navigation\n "
@@ -838,7 +720,7 @@ class OpenVR(HMD_Base):
                     self.state = State.NAVIGATION
 
             elif self.state == State.SCALING:
-                currDist = self.computeTargetObjDistance("TUI.L", "", True)
+                currDist = self.computeTargetObjDistance("Controller.L", "", True)
                 offset = (currDist - self.diff_distance) / 10
                 if self.boneToControll != "":
                     bpy.data.objects[self.objToControll].pose.bones[self.boneToControll].scale = self.initial_scale
@@ -864,7 +746,6 @@ class OpenVR(HMD_Base):
 
             if self.state_l == StateLeft.IDLE:
                 bpy.data.objects["Text.L"].data.body = "Idle\n" + self.objToControll_l + "-" + self.boneToControll_l
-                tui_l.hide = True
 
                 ## TIMELINE NAVIGATION
                 if ctrl_state_l.ulButtonPressed == 4294967296:
@@ -902,7 +783,6 @@ class OpenVR(HMD_Base):
 
             elif self.state_l == StateLeft.INTERACTION_LOCAL:
                 bpy.data.objects["Text.L"].data.body = "Interaction\n" + self.objToControll_l + "-" + self.boneToControll_l + "\n" + self.axes[self.curr_axes_l]
-                tui_l.hide = True
                 pointer.hide = True
 
                 if self.objToControll == self.objToControll_l \
@@ -971,7 +851,6 @@ class OpenVR(HMD_Base):
 
             elif self.state_l == StateLeft.DECISIONAL:
                 bpy.data.objects["Text.L"].data.body = "Selection\n" + self.objToControll_l + "-" + self.boneToControll_l
-                tui_l.hide = False
                 pointer.hide = False
 
                 # Compute the nearest object
