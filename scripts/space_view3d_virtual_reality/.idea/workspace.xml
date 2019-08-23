@@ -31,19 +31,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hmd/openvr.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="300" column="52" selection-start-line="300" selection-start-column="45" selection-end-line="300" selection-end-column="52" />
+            <state relative-caret-position="51">
+              <caret line="484" selection-start-line="484" selection-end-line="484" />
               <folding>
-                <element signature="e#2297#2556#0" />
-                <element signature="e#2585#2695#0" />
-                <element signature="e#4755#6266#0" />
-                <element signature="e#6298#6368#0" />
-                <element signature="e#6575#7936#0" />
-                <element signature="e#14370#15669#0" />
-                <element signature="e#16602#18367#0" />
-                <element signature="e#18494#23097#0" />
-                <element signature="e#23185#23609#0" />
-                <element signature="e#23655#23937#0" />
+                <element signature="e#19295#22211#0" />
               </folding>
             </state>
           </provider>
@@ -53,8 +44,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>CREATE_CURVE</find>
-      <find>vector</find>
       <find>thread</find>
       <find>playerSound</find>
       <find>copy</find>
@@ -81,8 +70,10 @@
       <find>trans_matrix</find>
       <find>computeTargetObjDistance</find>
       <find>tui</find>
-      <find>#?#</find>
+      <find>getClosestItem</find>
       <find>pointer</find>
+      <find>selecte</find>
+      <find>#?#</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -104,10 +95,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="653" />
-    <option name="y" value="-23" />
-    <option name="width" value="2424" />
-    <option name="height" value="1312" />
+    <option name="x" value="652" />
+    <option name="y" value="-24" />
+    <option name="width" value="2425" />
+    <option name="height" value="1313" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -343,19 +334,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/hmd/openvr.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="300" column="52" selection-start-line="300" selection-start-column="45" selection-end-line="300" selection-end-column="52" />
+        <state relative-caret-position="51">
+          <caret line="484" selection-start-line="484" selection-end-line="484" />
           <folding>
-            <element signature="e#2297#2556#0" />
-            <element signature="e#2585#2695#0" />
-            <element signature="e#4755#6266#0" />
-            <element signature="e#6298#6368#0" />
-            <element signature="e#6575#7936#0" />
-            <element signature="e#14370#15669#0" />
-            <element signature="e#16602#18367#0" />
-            <element signature="e#18494#23097#0" />
-            <element signature="e#23185#23609#0" />
-            <element signature="e#23655#23937#0" />
+            <element signature="e#19295#22211#0" />
           </folding>
         </state>
       </provider>

@@ -90,7 +90,7 @@ class OpenVR(HMD_Base):
 
     gui_obj = ['Camera', 'Origin',
                'Controller.R', 'Controller.L',
-               'SelectedObj', 'Text.R', 'Text.L']
+               'Text.R', 'Text.L']
 
     points = []
 
@@ -279,7 +279,7 @@ class OpenVR(HMD_Base):
                     bpy.data.objects[obj].select = False
                     bpy.ops.object.mode_set(mode='OBJECT')
 
-    ## Computes distance from TUI pointer
+    ## Computes distance from controller
     def computeTargetObjDistance(self, Object, Bone, isRotFlag):
 
         if isRotFlag:
@@ -298,37 +298,35 @@ class OpenVR(HMD_Base):
             return (math.sqrt(pow((tui.location[0] - loc[0]), 2) + pow((tui.location[1] - loc[1]), 2) + pow(
                 (tui.location[2] - loc[2]), 2)))
 
-    ## Returns the object closest to the TUI pointer
-    def getClosestItem(self, pointer,isRight):
+    ## Returns the object closest to the Controller
+    def getClosestItem(self, isRight):
         dist = sys.float_info.max
         cObj = ""
         cBone = ""
         distThreshold = 0.5
 
         for object in bpy.data.objects:
-            # if (object.type != 'CAMERA' and object.name != 'TUI' and object.name != 'Controller' and object.name != 'SelectedObj'):
-
             if object.type == 'ARMATURE':
                 if not ':TEST_REF' in object.name:
                     for bone in object.pose.bones:
-                        currDist = self.computeTargetObjDistance(object.name, bone.name,isRight)
+                        currDist = self.computeTargetObjDistance(object.name, bone.name, isRight)
                         bone.bone_group = None
                         if (currDist < dist and currDist < distThreshold):
                             dist = currDist
                             cObj = object.name
                             cBone = bone.name
-                            pointer.location = bone.center + object.location
+
 
             else:
                 #if object.type != 'CAMERA' and not object.name in self.gui_obj:
                 if not object.name in self.gui_obj:
-                    currDist = self.computeTargetObjDistance(object.name, "",isRight)
+                    currDist = self.computeTargetObjDistance(object.name, "", isRight)
                     # print(object.name, bone.name, currDist)
                     if (currDist < dist and currDist < distThreshold):
                         dist = currDist
                         cObj = object.name
                         cBone = ""
-                        pointer.location = object.location
+
 
 
         # Select the new closest item
@@ -480,13 +478,13 @@ class OpenVR(HMD_Base):
 
 
             self.setController()
+
             # ctrl_state contains the value of the button
             idx, ctrl_state = openvr.IVRSystem().getControllerState(self.ctrl_index_r)
             idx_l, ctrl_state_l = openvr.IVRSystem().getControllerState(self.ctrl_index_l)
 
             ctrl = bpy.data.objects['Controller.R']
             ctrl_l = bpy.data.objects['Controller.L']
-            pointer = bpy.data.objects['SelectedObj']
             camera = bpy.data.objects['Camera']
 
             ########## Right_Controller_States ##########
@@ -548,11 +546,11 @@ class OpenVR(HMD_Base):
             elif self.state == State.DECISIONAL:
                 print("Decisional")
                 bpy.data.objects["Text.R"].data.body = "Selection\n " + self.objToControll + "-" + self.boneToControll
-                pointer.hide = False
+
 
                 # Compute the nearest object
                 try:
-                    self.objToControll, self.boneToControll = self.getClosestItem(pointer, True)
+                    self.objToControll, self.boneToControll = self.getClosestItem(True)
                 except:
                     print("Error during selection")
                 global currObject
@@ -564,13 +562,11 @@ class OpenVR(HMD_Base):
                 if ctrl_state.ulButtonPressed != 4:
                     # print("touch button released")
                     self.changeSelection(self.objToControll, self.boneToControll, True)
-                    pointer.hide = True
 
                     self.state = State.IDLE
 
             elif self.state == State.INTERACTION_LOCAL:
                 bpy.data.objects["Text.R"].data.body = "Interaction\n" + self.objToControll + "-" + self.boneToControll + "\n" + self.axes[self.curr_axes_r]
-                pointer.hide = True
 
                 ## Controll object scale
                 if self.objToControll == self.objToControll_l and self.boneToControll == self.boneToControll_l and ctrl_state_l.ulButtonPressed == 8589934592:
@@ -630,7 +626,6 @@ class OpenVR(HMD_Base):
                     self.state = State.IDLE
 
             elif self.state == State.NAVIGATION_ENTER:
-                pointer.hide = True
                 bpy.data.objects["Text.R"].data.body = "Navigation\n "
                 bpy.data.objects["Text.L"].data.body = "Navigation\n "
                 if ctrl_state.ulButtonPressed != 2:
@@ -783,7 +778,7 @@ class OpenVR(HMD_Base):
 
             elif self.state_l == StateLeft.INTERACTION_LOCAL:
                 bpy.data.objects["Text.L"].data.body = "Interaction\n" + self.objToControll_l + "-" + self.boneToControll_l + "\n" + self.axes[self.curr_axes_l]
-                pointer.hide = True
+
 
                 if self.objToControll == self.objToControll_l \
                         and self.boneToControll == self.boneToControll_l \
@@ -851,10 +846,9 @@ class OpenVR(HMD_Base):
 
             elif self.state_l == StateLeft.DECISIONAL:
                 bpy.data.objects["Text.L"].data.body = "Selection\n" + self.objToControll_l + "-" + self.boneToControll_l
-                pointer.hide = False
 
                 # Compute the nearest object
-                self.objToControll_l, self.boneToControll_l = self.getClosestItem(pointer, False)
+                self.objToControll_l, self.boneToControll_l = self.getClosestItem(False)
                 global currObject_l
                 global currBone_l
                 currObject_l = self.objToControll_l
@@ -862,13 +856,7 @@ class OpenVR(HMD_Base):
                 print("Current obj:", self.objToControll_l, self.boneToControll_l)
 
                 if ctrl_state_l.ulButtonPressed != 4:
-
-                    global mode
-                    pointer.hide = True
-
-                    #print("touch button released")
                     self.changeSelection(self.objToControll_l, self.boneToControll_l, True)
-
                     self.state_l = StateLeft.IDLE
                     print ("DECISIONAL -> IDLE")
 
