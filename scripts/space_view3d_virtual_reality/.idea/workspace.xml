@@ -31,10 +31,48 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hmd/openvr.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="484" selection-start-line="484" selection-end-line="484" />
+            <state relative-caret-position="241">
+              <caret line="631" column="35" lean-forward="true" selection-start-line="631" selection-start-column="35" selection-end-line="631" selection-end-column="35" />
               <folding>
-                <element signature="e#19295#22211#0" />
+                <element signature="e#221#237#0" expanded="true" />
+                <element signature="e#2375#6504#0" />
+                <element signature="e#2514#3413#0" />
+                <element signature="e#3547#3688#0" />
+                <element signature="e#3882#4241#0" />
+                <element signature="e#3933#4023#0" />
+                <element signature="e#4612#5519#0" />
+                <element signature="e#5809#6443#0" />
+                <element signature="e#4853#6214#0" />
+                <element signature="e#6253#8539#0" />
+                <element signature="e#8602#9901#0" />
+                <element signature="e#10018#10737#0" />
+                <element signature="e#10838#12336#0" />
+                <element signature="e#12463#17066#0" />
+                <element signature="e#14761#17066#0" />
+                <element signature="e#17635#17802#0" />
+                <element signature="e#17657#17939#0" />
+                <element signature="e#19323#19357#0" />
+                <element signature="e#21771#21854#0" />
+                <element signature="e#22359#23208#0" />
+                <element signature="e#23170#25721#0" />
+                <element signature="e#25789#26178#0" />
+                <element signature="e#26251#26713#0" />
+                <element signature="e#26785#27142#0" />
+                <element signature="e#27209#30128#0" />
+                <element signature="e#30192#30288#0" />
+                <element signature="e#30353#30449#0" />
+                <element signature="e#30522#30692#0" />
+                <element signature="e#30765#30901#0" />
+                <element signature="e#30965#32192#0" />
+                <element signature="e#32316#34893#0" />
+                <element signature="e#32540#32626#0" />
+                <element signature="e#32733#33003#0" />
+                <element signature="e#33157#34893#0" />
+                <element signature="e#34973#37217#0" />
+                <element signature="e#37290#37446#0" />
+                <element signature="e#37520#38067#0" />
+                <element signature="e#38138#38397#0" />
+                <element signature="e#38470#39212#0" />
               </folding>
             </state>
           </provider>
@@ -44,25 +82,11 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>thread</find>
-      <find>playerSound</find>
-      <find>copy</find>
-      <find>applyConstraint</find>
-      <find>left cont</find>
-      <find>StateLeft.NAVI</find>
-      <find>state</find>
-      <find>Nav-</find>
-      <find>bpy.data.textures['Texture.R'].image</find>
-      <find>bpy.data.textures['Texture.L'].image</find>
-      <find>Texture.L</find>
-      <find>points</find>
-      <find>idle</find>
       <find>ERROR</find>
       <find>timer</find>
       <find>draw</find>
       <find>crea</find>
       <find>point</find>
-      <find>create_curve</find>
       <find>TUI</find>
       <find>setTracker</find>
       <find>tester</find>
@@ -74,6 +98,20 @@
       <find>pointer</find>
       <find>selecte</find>
       <find>#?#</find>
+      <find>tracker_index</find>
+      <find>curr_axes_r</find>
+      <find>points</find>
+      <find>mode</find>
+      <find>currObject</find>
+      <find>update</find>
+      <find>init</find>
+      <find>create_curve</find>
+      <find>remo</find>
+      <find>stroke</find>
+      <find>set_ini</find>
+      <find>compute_dist</find>
+      <find>compute</find>
+      <find>compute_dis</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -95,10 +133,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="652" />
+    <option name="x" value="411" />
     <option name="y" value="-24" />
-    <option name="width" value="2425" />
-    <option name="height" value="1313" />
+    <option name="width" value="1618" />
+    <option name="height" value="1053" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -172,7 +210,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Event Log" order="7" side_tool="true" visible="true" weight="0.042432815" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="7" side_tool="true" visible="true" weight="0.04384724" />
       <window_info anchor="bottom" id="Python Console" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
@@ -334,10 +372,48 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/hmd/openvr.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="484" selection-start-line="484" selection-end-line="484" />
+        <state relative-caret-position="241">
+          <caret line="631" column="35" lean-forward="true" selection-start-line="631" selection-start-column="35" selection-end-line="631" selection-end-column="35" />
           <folding>
-            <element signature="e#19295#22211#0" />
+            <element signature="e#221#237#0" expanded="true" />
+            <element signature="e#2375#6504#0" />
+            <element signature="e#2514#3413#0" />
+            <element signature="e#3547#3688#0" />
+            <element signature="e#3882#4241#0" />
+            <element signature="e#3933#4023#0" />
+            <element signature="e#4612#5519#0" />
+            <element signature="e#5809#6443#0" />
+            <element signature="e#4853#6214#0" />
+            <element signature="e#6253#8539#0" />
+            <element signature="e#8602#9901#0" />
+            <element signature="e#10018#10737#0" />
+            <element signature="e#10838#12336#0" />
+            <element signature="e#12463#17066#0" />
+            <element signature="e#14761#17066#0" />
+            <element signature="e#17635#17802#0" />
+            <element signature="e#17657#17939#0" />
+            <element signature="e#19323#19357#0" />
+            <element signature="e#21771#21854#0" />
+            <element signature="e#22359#23208#0" />
+            <element signature="e#23170#25721#0" />
+            <element signature="e#25789#26178#0" />
+            <element signature="e#26251#26713#0" />
+            <element signature="e#26785#27142#0" />
+            <element signature="e#27209#30128#0" />
+            <element signature="e#30192#30288#0" />
+            <element signature="e#30353#30449#0" />
+            <element signature="e#30522#30692#0" />
+            <element signature="e#30765#30901#0" />
+            <element signature="e#30965#32192#0" />
+            <element signature="e#32316#34893#0" />
+            <element signature="e#32540#32626#0" />
+            <element signature="e#32733#33003#0" />
+            <element signature="e#33157#34893#0" />
+            <element signature="e#34973#37217#0" />
+            <element signature="e#37290#37446#0" />
+            <element signature="e#37520#38067#0" />
+            <element signature="e#38138#38397#0" />
+            <element signature="e#38470#39212#0" />
           </folding>
         </state>
       </provider>
