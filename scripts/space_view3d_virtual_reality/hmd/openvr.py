@@ -51,11 +51,12 @@ class softAss_detAnnealing_3(threading.Thread):
         return math.sqrt(((p1[0] - p2[0]) ** 2) + ((p1[1] - p2[1]) ** 2) + ((p1[2] - p2[2]) ** 2))
 
     # Move the first bone at the beggining og the stroke
-    def set_init_cond(self):
+    def set_init_cond(self, move_bone):
         bones = bpy.data.objects['Armature'].pose.bones  # <H
         stroke = bpy.data.curves['Stroke'].splines[0]  # <H
 
         # TODO: Find root bones
+
         for b in bones:
             if b.parent == None:
                 print(bpy.data.objects['Armature'].matrix_world * b.head)
@@ -63,59 +64,81 @@ class softAss_detAnnealing_3(threading.Thread):
                 pmatrix = b.bone.matrix_local
                 omatrix = bpy.data.objects['Armature'].matrix_world
 
-
                 target_loc = bpy.data.objects['StrokeObj'].matrix_world * stroke.bezier_points[0].co
+                print('targ1', target_loc)
+
                 b.location = omatrix.inverted() * pmatrix.inverted() * target_loc
 
                 bpy.context.scene.update()
                 print(bpy.data.objects['Armature'].matrix_world * b.head)
+        if move_bone:
+            for b in bones:
+                if not b.bone.use_connect and b.parent != None:
+                    dist = 100
+                    target_loc = bpy.data.objects['StrokeObj'].matrix_world * stroke.bezier_points[0].co
+                    bpy.data.objects['Empty'].location = target_loc
 
-    def run(self):
-        bones = bpy.data.objects['Armature'].pose.bones  # <H
-        # stroke = bpy.data.curves['Stroke'].splines[0] # <H
+                    for k in range(0, len(bpy.data.curves['Stroke'].splines)):
+                        stroke_line = bpy.data.curves['Stroke'].splines[k]
+                        for j in range(0, len(stroke_line.bezier_points)):
+                            curr_dist = self.compute_dist(bpy.data.objects['Armature'].matrix_world * b.head,
+                                                     bpy.data.objects['StrokeObj'].matrix_world *
+                                                     stroke_line.bezier_points[j].co)
+                            if curr_dist < dist:
+                                target_loc = bpy.data.objects['StrokeObj'].matrix_world * stroke_line.bezier_points[
+                                    j].co
+                                dist = curr_dist
 
+                    pmatrix = b.matrix
+                    omatrix = bpy.data.objects['Armature'].matrix_world
+                    b.location = omatrix.inverted() * pmatrix.inverted() * target_loc
+                    bpy.context.scene.update()
+
+    # Create the dictionary
+    def create_dict(self):
         dict = {}
-        stroke_points = []
         num_points = 0
         for k in range(0, len(bpy.data.curves['Stroke'].splines)):
             stroke = bpy.data.curves['Stroke'].splines[k]
             for j in range(0, len(stroke.bezier_points)):
-                p = stroke.bezier_points[j]
-                # World position of the point
-                point = bpy.data.objects['StrokeObj'].matrix_world * p.co
                 # Add into the dictionoary for correspondance
                 dict[num_points] = [k, j]  # [spline_index, point_index]
-                # Add in the point list
-                stroke_points.append(point)
                 num_points += 1
+        return dict
 
-        # [DEBUG]:
-        # print(dict)
-        # for i in range(0, num_points):
-        #    print(dict[i])
-        #    print(dict[i][0], dict[i][1])
+    def find_closest_point_distance(self, dict, bone_point, curr_spline):
+        dist = 100
+        for i in range(0, len(dict)):
+            if dict[i][0] == curr_spline:
+                p = bpy.data.curves['Stroke'].splines[dict[i][0]].bezier_points[dict[i][1]]
+                point = bpy.data.objects['StrokeObj'].matrix_world * p.co
+                curr_dist = self.compute_dist(bone_point, point)
+                if curr_dist < dist:
+                    dist = curr_dist
+                    #bpy.data.objects['Empty'].location = point
 
-        # INIT PARAMETERS
-        # values of the paper
-        # beta_f = 0.2
-        # beta_r = 1.075
-        # beta = 0.00091
-        # alpha = 0.03
-        # I0 = 4
-        # I1 = 30
+        print(curr_spline, '=', dist)
+        return dist
+
+    def run(self):
+        bones = bpy.data.objects['Armature'].pose.bones  # <H
+
+        dict = self.create_dict()
+        num_points = len(dict)
+        align_cost = 100
 
         # custom value
-        beta_f = 0.2
-        beta_r = 1.9
-        beta = 0.00091
-        alpha = 0.03
-        I0 = 4
-        I1 = 30
+        beta_f = 0.2  # 0.2
+        beta_r = 1.7  # 1.075
+        beta = 0.0009  # 0.00091
+        alpha = 0.03  # 0.03
+        I0 = 4  # 4
+        I1 = 10  # 30
 
         iteration = 0
 
         # set starting condition
-        self.set_init_cond()
+        self.set_init_cond(False)
 
         while beta <= beta_f:
             print('iteration:', iteration)
@@ -134,14 +157,11 @@ class softAss_detAnnealing_3(threading.Thread):
                     b = bones[i]
                     # World position of the bone
                     tail = bpy.data.objects['Armature'].matrix_world * b.tail  # <H
-                    head = bpy.data.objects['Armature'].matrix_world * b.head  # <H
-                    # center = bpy.data.objects['Armature'].matrix_world * b.center # <H
-
                     dist = self.compute_dist(tail, point)
-                    # length_diff = abs(b.length - compute_dist(point,head))
-                    # costs_row.append(dist + length_diff)
-                    costs_row.append(-(dist - alpha))
+                    # costs_row.append(-(dist-alpha))
+                    costs_row.append(dist)
 
+                # Qjk not derived yet
                 Qjk.append(costs_row)
 
             m0 = np.asarray(Qjk)
@@ -149,7 +169,7 @@ class softAss_detAnnealing_3(threading.Thread):
             # Deterministic annealing
             for i in range(0, num_points):
                 for j in range(0, len(bones)):
-                    m0[i, j] = math.exp(beta * m0[i, j])
+                    m0[i, j] = math.exp(beta * (-(m0[i, j] - alpha)))
 
                     # TODO: Add outlier row and cols
 
@@ -186,14 +206,15 @@ class softAss_detAnnealing_3(threading.Thread):
                 for i in range(0, len(bones)):
                     b = bones[i]
                     # World position of the bone
-                    tail = bpy.data.objects['Armature'].matrix_world * b.tail  # <H
+                    # tail = bpy.data.objects['Armature'].matrix_world * b.tail # <H
                     head = bpy.data.objects['Armature'].matrix_world * b.head  # <H
                     # center = bpy.data.objects['Armature'].matrix_world * b.center # <H
-
-                    dist = self.compute_dist(tail, point)
                     # length_diff = abs(b.length - compute_dist(point,head))
                     # costs_row.append(dist + length_diff)
-                    costs_row.append(dist - alpha * m0[k, i])
+
+                    #phi = 0
+                    phi = self.find_closest_point_distance(dict, head, dict[k][0])
+                    costs_row.append(Qjk[k][i] - alpha * m0[k, i] + phi)
 
                 E3D.append(costs_row)
 
@@ -201,6 +222,8 @@ class softAss_detAnnealing_3(threading.Thread):
             row_ind, col_ind = linear_sum_assignment(cost)
             print(col_ind)
             print(cost[row_ind, col_ind].sum())
+            curr_align_cost = np.transpose(Qjk)[row_ind, col_ind].sum()
+            print(curr_align_cost)
 
             # Update pose parameters
             for i in range(0, len(bones)):
@@ -216,11 +239,15 @@ class softAss_detAnnealing_3(threading.Thread):
                 constr = b.constraints['Damped Track']
                 constr.target = bpy.data.objects[b.name]
 
+            time.sleep(0.01)
             iteration += 1
             beta = beta * beta_r
 
-
-
+            if align_cost != curr_align_cost:
+                align_cost = curr_align_cost
+            else:
+                print('{FINISHED}')
+                break
 
 class State(Enum):
     IDLE = 1
@@ -245,6 +272,20 @@ class StateLeft(Enum):
     NAVIGATION = 5
     SCALING = 11
     CHANGE_AXES = 12
+    TRACKPAD_BUTTON_DOWN = 14
+
+class Keyframe:
+    def __init__(self, frame, rot, loc, scale, obj, bone, frameType):
+        self.frame = frame
+        self.rot = rot
+        self.loc = loc
+        self.scale = scale
+        self.obj = obj
+        self.bone = bone
+        self.frameType = frameType
+
+
+
 
 class OpenVR(HMD_Base):
     ctrl_index_r = 0
@@ -625,6 +666,53 @@ class OpenVR(HMD_Base):
                     bpy.data.objects[obj].rotation_euler[1] = init_rot[1]
                     bpy.data.objects[obj].rotation_mode = 'QUATERNION'
 
+    ## Insert key frame
+    def insertFrame(self, frame):
+        for f in frame:
+            print ("DEBUG [insertFrame] - Frame: ", f.frame, f.frameType, "LOC:", f.loc, "ROT", f.rot, "SCALE", f.scale,
+                   "Bone:", f.bone)
+
+            obj = bpy.data.objects[f.bone]
+            obj.rotation_mode = 'QUATERNION'
+
+            obj.keyframe_insert(data_path='location', frame=f.frame)
+
+
+            '''
+            if f.bone != "":
+                obj = bpy.data.objects[f.obj]
+                pbone = obj.pose.bones[f.bone]
+                pbone.rotation_mode = 'QUATERNION'
+                pbone.location = f.loc
+                pbone.rotation_quaternion = Quaternion((f.rot[0], f.rot[1], 0, f.rot[3]))
+                pbone.scale = f.scale
+
+                if f.frameType[0]:
+                    pbone.keyframe_insert(data_path='location', frame=f.frame)
+                if f.frameType[1]:
+                    pbone.keyframe_insert(data_path='rotation_quaternion', frame=f.frame)
+                    pbone.rotation_quaternion = Quaternion((1, 0, 0, 0))
+                if f.frameType[2]:
+                    pbone.keyframe_insert(data_path='scale', frame=f.frame)
+
+            else:
+                obj = bpy.data.objects[f.obj]
+                obj.rotation_mode = 'QUATERNION'
+                obj.location = f.loc
+                obj.rotation_quaternion = f.rot
+                obj.scale = f.scale
+
+                if f.frameType[0]:
+                    obj.keyframe_insert(data_path='location', frame=f.frame)
+                if f.frameType[1]:
+                    obj.keyframe_insert(data_path='rotation_quaternion', frame=f.frame)
+                if f.frameType[2]:
+                    obj.keyframe_insert(data_path='scale', frame=f.frame)
+            '''
+
+
+        print("Finished")
+
     ## Create a curve from a set of points
     def create_curve(self):
         name = "Stroke"
@@ -637,6 +725,7 @@ class OpenVR(HMD_Base):
         bpy.context.scene.objects.link(ob)
         ob.show_x_ray = True
 
+    ## Add a new splice to the curve object
     def add_spline(self, point):
         curvedata = bpy.data.curves['Stroke']
         polyline = curvedata.splines.new('BEZIER')
@@ -652,15 +741,19 @@ class OpenVR(HMD_Base):
         polyline.bezier_points[-1].handle_right = point
         print (datetime.datetime.now())
 
+    # Removes the last spline
     def remove_spline(self):
         polyline = bpy.data.curves['Stroke'].splines[-1]
         bpy.data.curves['Stroke'].splines.remove(polyline)
 
+    # Reset the field Target of all the constraints
+    def reset_track_constr(self):
+        bones = bpy.data.objects['Armature'].pose.bones
 
-
-
-
-
+        for i in range(0, len(bones)):
+            b = bones[i]
+            constr = b.constraints['Damped Track']
+            constr.target = None
 
 
 
@@ -746,10 +839,9 @@ class OpenVR(HMD_Base):
                     self.state = State.IDLE
 
             elif self.state == State.TRACKPAD_BUTTON_DOWN:
-
                 if ctrl_state.ulButtonPressed != 4294967296:
                     x, y = ctrl_state.rAxis[0].x, ctrl_state.rAxis[0].y
-                    # Apply rotation for X setup otherwiise + setup
+                    # Apply rotation for X setup otherwise + setup
                     x1, y1 = x * 0.707 - y * -0.707, x * -0.707 + y * 0.707
                     x, y = x1, y1
 
@@ -757,19 +849,18 @@ class OpenVR(HMD_Base):
                         print('UP')
                         print('LAUNCH ALGORITHM')
                         softAss_detAnnealing_3().start()
-
                     if x > 0 and y < 0:
                         print ('RIGHT')
+                        self.reset_track_constr()
                     if x < 0 and y > 0:
-                        for i in range (0, len(bpy.data.curves['Stroke'].splines)):
-                            self.remove_spline()
                         print ('LEFT')
+                        self.remove_spline()
                     if x < 0 and y < 0:
                         print ('DOWN')
-                        self.remove_spline()
+                        for i in range (0, len(bpy.data.curves['Stroke'].splines)):
+                            self.remove_spline()
 
                     self.state = State.IDLE
-
 
             elif self.state == State.DECISIONAL:
                 print("Decisional")
@@ -970,10 +1061,10 @@ class OpenVR(HMD_Base):
             if self.state_l == StateLeft.IDLE:
                 bpy.data.objects["Text.L"].data.body = "Idle\n" + self.objToControll_l + "-" + self.boneToControll_l
 
-                ## TIMELINE NAVIGATION
+                ## TRACKPAD
                 if ctrl_state_l.ulButtonPressed == 4294967296:
-                    x, y = ctrl_state_l.rAxis[0].x, ctrl_state_l.rAxis[0].y
-                    print(x,y)
+                    #x, y = ctrl_state_l.rAxis[0].x, ctrl_state_l.rAxis[0].y
+                    self.state_l = StateLeft.TRACKPAD_BUTTON_DOWN
 
                 # DECISIONAL
                 if (ctrl_state_l.ulButtonPressed == 4):
@@ -1087,6 +1178,44 @@ class OpenVR(HMD_Base):
                     self.changeSelection(self.objToControll_l, self.boneToControll_l, True)
                     self.state_l = StateLeft.IDLE
                     print ("DECISIONAL -> IDLE")
+
+            elif self.state_l == StateLeft.TRACKPAD_BUTTON_DOWN:
+                if ctrl_state_l.ulButtonPressed != 4294967296:
+                    x, y = ctrl_state_l.rAxis[0].x, ctrl_state_l.rAxis[0].y
+                    # Apply rotation for X setup otherwise + setup
+                    x1, y1 = x * 0.707 - y * -0.707, x * -0.707 + y * 0.707
+                    x, y = x1, y1
+
+                    if x > 0 and y > 0:
+                        print('UP')
+                        print ('[DEBUG]: TRACKPAD_BUTTON_DOWN - PLAY ANIMATION')
+                        bpy.ops.screen.animation_play()
+                    if x > 0 and y < 0 and bpy.context.scene.frame_current < bpy.data.scenes[0].frame_end:
+                        print ('RIGHT')
+                        print ('[DEBUG]: TRACKPAD_BUTTON_DOWN - FRAME ++')
+                        bpy.context.scene.frame_current += 1
+                    if x < 0 and y > 0 and bpy.context.scene.frame_current > bpy.data.scenes[0].frame_start:
+                        print ('LEFT')
+                        print ('[DEBUG]: TRACKPAD_BUTTON_DOWN - FRAME --')
+                        bpy.context.scene.frame_current -= 1
+                    if x < 0 and y < 0:
+                        print ('DOWN')
+                        print ('[DEBUG]: TRACKPAD_BUTTON_DOWN - ADD KEYFRAME')
+                        if self.objToControll!="" and self.boneToControll!="":
+                            for bone in bpy.data.objects[self.objToControll].pose.bones:
+                                loc = copy.deepcopy(bone.location)
+                                rot = copy.deepcopy((bone.bone.matrix_local.inverted() * bone.matrix).to_quaternion())
+                                scale = copy.deepcopy(bone.scale)
+                                f = Keyframe(bpy.context.scene.frame_current, rot, loc, scale, self.objToControll, bone.name, [False, True, False])
+                                self.insertFrame([f])
+
+                    self.state_l = StateLeft.IDLE
+
+
+
+
+
+
 
             super(OpenVR, self).loop(context)
 
