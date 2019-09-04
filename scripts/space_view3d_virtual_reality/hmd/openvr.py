@@ -94,9 +94,9 @@ class softAss_detAnnealing_4(threading.Thread):
                 b.location = (omatrix * pmatrix).inverted() * target_loc + b.location
                 bpy.context.scene.update()
 
-                if b.parent != None:
-                    bpy.data.objects[b.name].location = direction
-                    mapping[b.name] = spline_index
+                #if b.parent != None:
+                bpy.data.objects[b.name].location = direction
+                mapping[b.name] = spline_index
 
                 b.constraints['Damped Track'].target = bpy.data.objects[b.name]
                 bpy.context.scene.update()
@@ -117,12 +117,19 @@ class softAss_detAnnealing_4(threading.Thread):
 
     def get_direction(self, tail, spline_index, point_index):
         stroke_line = bpy.data.curves['Stroke'].splines[spline_index]
-        next = bpy.data.objects['StrokeObj'].matrix_world * stroke_line.bezier_points[point_index + 10].co
-        prev = bpy.data.objects['StrokeObj'].matrix_world * stroke_line.bezier_points[point_index - 10].co
-        if self.compute_dist(tail, next) < self.compute_dist(tail, prev):
-            return next
+        point_next = point_index + 10
+        point_prev = point_index - 10
+        if point_next >= len(stroke_line.bezier_points):
+            return bpy.data.objects['StrokeObj'].matrix_world * stroke_line.bezier_points[point_prev].co
+        elif point_prev <= -1:
+            return bpy.data.objects['StrokeObj'].matrix_world * stroke_line.bezier_points[point_next].co
         else:
-            return prev
+            next = bpy.data.objects['StrokeObj'].matrix_world * stroke_line.bezier_points[point_index + 10].co
+            prev = bpy.data.objects['StrokeObj'].matrix_world * stroke_line.bezier_points[point_index - 10].co
+            if self.compute_dist(tail, next) < self.compute_dist(tail, prev):
+                return next
+            else:
+                return prev
 
     def find_closest_point_distance(self, dict, bone_point, curr_spline):
         dist = 100
@@ -133,9 +140,25 @@ class softAss_detAnnealing_4(threading.Thread):
                 curr_dist = self.compute_dist(bone_point, point)
                 if curr_dist < dist:
                     dist = curr_dist
-
-
         return dist
+
+    def bending_cost(self, b, point):
+        if not b.bone.use_connect:
+            return 0
+        else:
+            parent = b.parent
+            parente_head = bpy.data.objects['Armature'].matrix_world * parent.head
+            dist = self.compute_dist(parente_head, point)
+            if dist != 0:
+                return b.length / dist
+            else:
+                return 1
+
+    def center_bone_distance(self, b, point, dict, curr_spline):
+        head = bpy.data.objects['Armature'].matrix_world * b.head
+        mid_point = (head + point) / 2
+        return self.find_closest_point_distance(dict, mid_point,curr_spline)
+
 
     def run(self):
         bones = bpy.data.objects['Armature'].pose.bones  # <H
@@ -149,7 +172,7 @@ class softAss_detAnnealing_4(threading.Thread):
         beta_r = 1.5  # 1.075
         beta = 0.0009  # 0.00091
         alpha = 0.03  # 0.03
-        I0 = 4  # 4
+        I0 = 10  # 4
         I1 = 10  # 30
 
         iteration = 0
@@ -158,7 +181,7 @@ class softAss_detAnnealing_4(threading.Thread):
         mapping = self.set_init_cond()
 
 
-        while beta <= beta_f:
+        while beta <= beta_f and iteration < I0:
             print('iteration:', iteration)
 
             Qjk = []
@@ -229,8 +252,11 @@ class softAss_detAnnealing_4(threading.Thread):
                     # length_diff = abs(b.length - compute_dist(point,head))
                     # costs_row.append(dist + length_diff)
 
-                    # phi = 0
-                    phi = self.find_closest_point_distance(dict, center, dict[k][0])
+                    phi = 0
+                    #phi = find_closest_point_distance(dict, center, dict[k][0]) # < FUNC
+                    phi += 2 * self.center_bone_distance(b, point, dict, dict[k][0]) # < FUNC
+                    phi += self.bending_cost(b, point) / 4
+
                     costs_row.append(Qjk[k][i] - alpha * m0[k, i] + phi)
 
                 E3D.append(costs_row)

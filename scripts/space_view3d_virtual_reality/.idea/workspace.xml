@@ -16,7 +16,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/Desktop/HKU/Project/reference.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="252">
+            <state relative-caret-position="16218">
               <caret line="972" column="80" selection-start-line="972" selection-start-column="12" selection-end-line="972" selection-end-column="80" />
               <folding>
                 <element signature="e#140#156#0" expanded="true" />
@@ -982,13 +982,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hmd/openvr.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="254" column="53" selection-start-line="254" selection-start-column="53" selection-end-line="254" selection-end-column="53" />
+            <state relative-caret-position="175">
+              <caret line="254" column="27" lean-forward="true" selection-start-line="254" selection-start-column="27" selection-end-line="254" selection-end-column="27" />
               <folding>
                 <element signature="e#1091#1181#0" />
-                <element signature="e#3415#3817#0" />
-                <element signature="e#3901#4419#0" />
-                <element signature="e#30755#30789#0" />
               </folding>
             </state>
           </provider>
@@ -998,7 +995,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>update</find>
       <find>create_curve</find>
       <find>remo</find>
       <find>stroke</find>
@@ -1011,11 +1007,8 @@
       <find>Quaternion</find>
       <find>insert</find>
       <find>stroke_points</find>
-      <find>compute_dist</find>
-      <find>find_closest_point_distance</find>
       <find>set_init_cond</find>
       <find>softAss_detAnnealing</find>
-      <find>print</find>
       <find>empty</find>
       <find>hand</find>
       <find>idle</find>
@@ -1028,6 +1021,10 @@
       <find>init_cond</find>
       <find>create_dic</find>
       <find>find_closest</find>
+      <find>print</find>
+      <find>compute_dist</find>
+      <find>bending</find>
+      <find>find_closest_point_distance</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -1049,10 +1046,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="2189" />
-    <option name="y" value="-28" />
-    <option name="width" value="864" />
-    <option name="height" value="808" />
+    <option name="x" value="1748" />
+    <option name="y" value="-13" />
+    <option name="width" value="1296" />
+    <option name="height" value="882" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -1115,6 +1112,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1296" height="1000" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.1575" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -1126,7 +1124,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Event Log" order="7" side_tool="true" visible="true" weight="0.034602076" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="7" side_tool="true" visible="true" weight="0.035755478" />
       <window_info anchor="bottom" id="Python Console" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
@@ -1275,7 +1273,7 @@
     </entry>
     <entry file="file://$USER_HOME$/Desktop/HKU/Project/reference.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
+        <state relative-caret-position="16218">
           <caret line="972" column="80" selection-start-line="972" selection-start-column="12" selection-end-line="972" selection-end-column="80" />
           <folding>
             <element signature="e#140#156#0" expanded="true" />
@@ -2239,13 +2237,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/hmd/openvr.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="254" column="53" selection-start-line="254" selection-start-column="53" selection-end-line="254" selection-end-column="53" />
+        <state relative-caret-position="175">
+          <caret line="254" column="27" lean-forward="true" selection-start-line="254" selection-start-column="27" selection-end-line="254" selection-end-column="27" />
           <folding>
             <element signature="e#1091#1181#0" />
-            <element signature="e#3415#3817#0" />
-            <element signature="e#3901#4419#0" />
-            <element signature="e#30755#30789#0" />
           </folding>
         </state>
       </provider>
