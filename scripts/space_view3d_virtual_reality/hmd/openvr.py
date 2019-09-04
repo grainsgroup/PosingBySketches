@@ -225,7 +225,7 @@ class softAss_detAnnealing_4(threading.Thread):
                     for j in range(0, len(bones)):
                         m0[i, j] = m1[i, j] / np.sum(m1[:, j])
 
-                        # [DEBUG]: Rows - Cols sum up
+            # [DEBUG]: Rows - Cols sum up
             # print("rows - cols sum up")
             # for i in range (0,num_points):
             #    print (np.sum(m0[i]))
@@ -720,13 +720,16 @@ class OpenVR(HMD_Base):
             print ("DEBUG [insertFrame] - Frame: ", f.frame, f.frameType, "LOC:", f.loc, "ROT", f.rot, "SCALE", f.scale,
                    "Bone:", f.bone)
 
-            obj = bpy.data.objects[f.bone]
-            obj.rotation_mode = 'QUATERNION'
+            obj = bpy.data.objects[f.obj]
+            bone = obj.pose.bones[f.bone]
+            constr = bone.constraints['Damped Track']
+            constr.target = None
+            bone.rotation_quaternion = f.rot
+            bpy.context.scene.update()
+            bone.keyframe_insert(data_path='rotation_quaternion')
+            constr.target = bpy.data.objects[bone.name]
 
-            obj.keyframe_insert(data_path='location', frame=f.frame)
-
-
-            '''
+        '''
             if f.bone != "":
                 obj = bpy.data.objects[f.obj]
                 pbone = obj.pose.bones[f.bone]
@@ -917,8 +920,6 @@ class OpenVR(HMD_Base):
                         for i in range (0, len(bpy.data.curves['Stroke'].splines)):
                             self.remove_spline()
                         self.state = State.IDLE
-
-
 
             elif self.state == State.DECISIONAL:
                 print("Decisional")
@@ -1266,6 +1267,7 @@ class OpenVR(HMD_Base):
                         print ('[DEBUG]: TRACKPAD_BUTTON_DOWN - ADD KEYFRAME')
                         if self.objToControll!="" and self.boneToControll!="":
                             for bone in bpy.data.objects[self.objToControll].pose.bones:
+                                bpy.context.scene.update()
                                 loc = copy.deepcopy(bone.location)
                                 rot = copy.deepcopy((bone.bone.matrix_local.inverted() * bone.matrix).to_quaternion())
                                 scale = copy.deepcopy(bone.scale)
